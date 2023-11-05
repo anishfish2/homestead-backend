@@ -14,7 +14,7 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 
-@app.route("/run-one")
+@app.route("/run-one", methods=['POST'])
 def analyze():
 
     data = pd.DataFrame.from_dict(request.get_json(), orient='index')
@@ -175,6 +175,7 @@ def gross_approval():
     return ({"x_N" : x_listN,
              "x_Y" : x_listY,
              "y_N" : y_listN,
+             "y_Y" : y_listY
              })
 
 
