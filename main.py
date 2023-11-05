@@ -178,6 +178,102 @@ def gross_approval():
              "y_Y" : y_listY
              })
 
+@app.route("/reverse-engineer")
+def reverse_engineer():
+   
+    data = pd.DataFrame.from_dict([request.get_json()['value']])
+
+    print(data.iloc[0])
+    data['LTV'] = data['loan_amount'] / data['appraised_value']
+
+    def add_pmi(row):
+        if row['LTV'] >= .8:
+            return row['monthly_mortgage_payment'] + row['appraised_value'] * .01 / 12
+        else:
+            return row['monthly_mortgage_payment']
+        
+    data['monthly_mortgage_payment_processed'] = data.apply(add_pmi, axis = 1)
+
+    data['DTI'] = (data['credit_card_payment'] + data['car_payment'] + data['student_loan_payments'] + data['monthly_mortgage_payment_processed']) / data['gross_monthly_income']
+
+    data['FEDTI'] = data['monthly_mortgage_payment_processed'] / data['gross_monthly_income']
+
+    print(data)
+    #Determine approval
+    def add_filter(df):
+        approved_list = []
+        ltv_list = []
+        credit_score_list = []
+        dti_43_list = []
+        dti_36_list = []
+        fedti_list = []
+
+        for index, row in df.iterrows():
+            approved = 'Y'
+            note = []
+            credit_score, ltv, dti_43, dti_36, fedti = 0, 0, 0, 0, 0
+
+            if row['credit_score'] < 640:
+                approved = 'N'
+                credit_score = 1
+            if row['LTV'] >= .8:
+                ltv = 1
+            if row['DTI'] >= .43:
+                approved = 'N'
+                dti_43 = 1
+            elif row['DTI'] >= .36:
+                approved = 'N'
+                dti_36 = 1
+            if row['FEDTI'] >= .28:
+                approved ='N'
+                fedti = 1
+
+            approved_list.append(approved)
+            credit_score_list.append(credit_score)
+            ltv_list.append(ltv)
+            dti_43_list.append(dti_43)
+            dti_36_list.append(dti_36)
+            fedti_list.append(fedti)
+
+        df['approved'] = approved_list
+        df['credit_score_check'] = credit_score_list
+        df['ltv_check'] = ltv_list
+        df['dti_43_check'] = dti_43_list
+        df['dti_36_check'] = dti_36_list
+        df['fedti_check'] = fedti_list
+        
+        return df
+    
+    column_to_check = request.get_json()['change']
+
+
+    data = add_filter(data)
+
+    if column_to_check == "credit_score":
+        temp = pd.DataFrame.from_dict([request.get_json()['value']])
+        temp['credit_score'] = 641
+        if add_filter(temp)['approved'][0] == 'Y':
+            return ("Raise your credit score above 640 to approve your loan!")
+        else:
+            return ("It is not possible to approve your loan by increasing your credit score alone. Please try changing the other fields!")
+    if column_to_check == "gross_monthly_income":
+        temp = pd.DataFrame.from_dict([request.get_json()['value']]) 
+        check_dti = (data['credit_card_payment'].iloc[0] + data['car_payment'].iloc[0] + data['student_loan_payments'].iloc[0] + data['monthly_mortgage_payment_processed'].iloc[0]) / .36
+        check_fedti = data['monthly_mortgage_payment_processed'].iloc[0] / .28
+
+        print(check_dti, check_fedti)
+        if check_dti >= check_fedti:
+            return f"You are limited by your DTI, raise your gross monthly income above {check_dti} to approve your loan!"
+        else:
+            return f"You are limited by your FEDTI, raise your gross monthly income above {check_fedti} to approve your loan!"
+
+
+
+
+
+    
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
