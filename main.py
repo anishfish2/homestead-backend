@@ -9,6 +9,7 @@ import time
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
 
 
 app = Flask(__name__)
@@ -316,8 +317,9 @@ def reverse_engineer():
 
 @app.route("/email", methods=['POST'])
 def email():
-    data = pd.DataFrame.from_dict(request.get_json(), orient='index')
-
+    print(request.get_json())
+    data = pd.DataFrame.from_dict([request.get_json()['value']])
+    
     data['LTV'] = data['loan_amount'] / data['appraised_value']
 
     def add_pmi(row):
@@ -379,11 +381,44 @@ def email():
         return df
     
     data = add_filter(data)
-    return data.to_json()
 
+    print("got here before")        
+    csv_filename = 'temp_data.csv'
+    data.to_csv(csv_filename, index=False)
 
+    load_dotenv()
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
+    smtp_username = 'anishfishy@gmail.com'
+    smtp_password = os.getenv('EMAIL_PASS')
+
+    from_email = 'anishfishy@gmail.com'
+    to_email = request.get_json()['email']
+    subject = 'Hello, world!'
+    body = 'Please find your report down below.'
+
+    message = MIMEMultipart()
+    message["From"] = from_email
+    message["To"] = to_email
+    message["Subject"] = subject
+
+    message.attach(MIMEText(body, "plain"))
+    print("got here")
+    with open(csv_filename, "rb") as attachment:
+        csv_attachment = MIMEApplication(attachment.read(), _subtype="csv")
+        csv_attachment.add_header("Content-Disposition", f"attachment; filename={csv_filename}")
+        message.attach(csv_attachment)
+    print("here now")
+    with smtplib.SMTP(smtp_server, smtp_port) as smtp:
+        smtp.starttls()
+        smtp.login(smtp_username, smtp_password)
+        smtp.send_message( message)
+
+    print("got here 2")
+    os.remove(csv_filename)
+    print(f"CSV file '{csv_filename}' deleted.")
     
-
+    return data.to_json()
 
 
 if __name__ == '__main__':

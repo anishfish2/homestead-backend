@@ -62,3 +62,4 @@ yarl
 plotly
 flask
 flask-cors
+secure-smtplib
