@@ -14,7 +14,7 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 
-@app.route("/run-one", methods=['POST'])
+@app.route("/run-one")
 def analyze():
 
     data = pd.DataFrame.from_dict(request.get_json(), orient='index')
@@ -137,3 +137,46 @@ def ask_gpt():
     total = response['choices'][0]['message']['content']
 
     return total
+
+
+
+@app.route("/get-gross-approval")
+def gross_approval():
+
+    x_listN = []
+    x_listY = []
+    y_listN = []
+    y_listY = []
+
+    file_path = 'x_listN'  
+    with open(file_path, 'r') as file:
+        file_content = file.read()
+
+        x_listN = file_content.split()
+
+    file_path = 'x_listY'  
+    with open(file_path, 'r') as file:
+        file_content = file.read()
+
+        x_listY = file_content.split()
+
+    file_path = 'y_listN'  
+    with open(file_path, 'r') as file:
+        file_content = file.read()
+
+        y_listN = file_content.split()
+
+    file_path = 'y_listY'  
+    with open(file_path, 'r') as file:
+        file_content = file.read()
+
+        y_listY = file_content.split()
+
+    return ({"x_N" : x_listN,
+             "x_Y" : x_listY,
+             "y_N" : y_listN,
+             })
+
+
+if __name__ == '__main__':
+    app.run(debug=True, port=8000)
