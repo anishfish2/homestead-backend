@@ -263,20 +263,32 @@ def reverse_engineer():
 
         print(check_dti, check_fedti)
         if check_dti >= check_fedti:
-            return f"You are limited by your DTI, raise your gross monthly income above {check_dti} to approve your loan!"
+            return f"You are limited by your DTI, raise your gross monthly income above {round(check_dti, 2)} to approve your loan!"
         else:
-            return f"You are limited by your FEDTI, raise your gross monthly income above {check_fedti} to approve your loan!"
+            return f"You are limited by your FEDTI, raise your gross monthly income above {round(check_fedti, 2)} to approve your loan!"
         
     
-    if column_to_check == "appraised_value":
-        temp = pd.DataFrame.from_dict([request.get_json()['value']]) 
+    # if column_to_check == "appraised_value":
+    #     temp = pd.DataFrame.from_dict([request.get_json()['value']]) 
 
-        if data['DTI'] > .36:
-            required_monthly_mortgage_payment_processed_dti = .36 * data['gross_monthly_income'].iloc[0] - data['credit_card_payment'].iloc[0] + data['car_payment'].iloc[0] + data['student_loan_payments'].iloc[0]
-            required_monthly_mortgage_payment_processed_fedti = .28 * data['gross_monthly_income'].iloc[0]
+    #     if data['DTI'] > .36:
+    #         required_monthly_mortgage_payment_processed_dti = .36 * data['gross_monthly_income'].iloc[0] - data['credit_card_payment'].iloc[0] + data['car_payment'].iloc[0] + data['student_loan_payments'].iloc[0]
+    #         required_monthly_mortgage_payment_processed_fedti = .28 * data['gross_monthly_income'].iloc[0]
             
-            if required_monthly_mortgage_payment_processed_dti >= required_monthly_mortgage_payment_processed_dti:
-                max_ltv = 0
+    #         required_appraised_value = 0
+
+    #         if data['LTV'].iloc[0] < .8 and data['monthly_mortgage_payment'].iloc[0] > max(required_monthly_mortgage_payment_processed_dti, required_monthly_mortgage_payment_processed_fedti):
+    #             return f"You are limited by your monthly mortgage payment and cannot adjust the desired appraisal value to approve the loan!"
+    #         elif:
+
+    #         if required_monthly_mortgage_payment_processed_dti >= required_monthly_mortgage_payment_processed_dti:
+    #             required_appraised_value = required_monthly_mortgage_payment_processed_dti - data['monthly_mortgage_payment'].iloc[0] * 12 / .01
+    #             return f"You are limited by your DTI, lower your gross monthly income below {required_appraised_value} to lower your approved monthly mortgage payment to approve your loan!"
+ 
+    #         else:
+    #             required_appraised_value = required_monthly_mortgage_payment_processed_fedti - data['monthly_mortgage_payment'].iloc[0] * 12 / .01  
+ 
+
 
 
 
