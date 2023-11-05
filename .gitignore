@@ -1,3 +1,4 @@
 HackUTD-2023-HomeBuyerInfo.csv
 venv/
 __pycache__/
+.env
