@@ -313,7 +313,7 @@ def reverse_engineer():
                         else:
                             required_appraised_value = (max_monthly_mortgage_payment_processed_fedti - data['monthly_mortgage_payment'].iloc[0]) * 12 / .01 
                             return f"You are limited by your FEDTI, lower your appraised value below {required_appraised_value} to lower your monthly mortgage payment taking into account PMI to approve your loan!" 
-    
+    return "You are limited by another requirement parameter. It doesn't matter how much you change the given criteria, the loan will not be approved! Please try again!"
 
 @app.route("/email", methods=['POST'])
 def email():
