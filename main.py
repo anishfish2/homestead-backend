@@ -114,18 +114,18 @@ def ask_gpt():
         sent_merged += i
 
     if "credit" in sent_merged:
-        prompt += "Currently, their credit score is below 640."
+        prompt += "Currently, their credit score is below 640. "
     if "ltv" in sent_merged:
-        prompt += "Currently, their LTV is greater or equal to 80%."
+        prompt += "Currently, their LTV is greater or equal to 80%. "
     if "dti_43" in sent_merged:
-        prompt += "Currently, their DTI is greater than 43%."
+        prompt += "Currently, their DTI is greater than 43%. "
     if "dti_36" in sent_merged:
-        prompt += "Currently, their DTI is greater than 36 percent but less than 43%."
+        prompt += "Currently, their DTI is greater than 36 percent but less than 43%. "
     if "fedt" in sent_merged:
-        prompt += "Currently, their FEDTI is greater than 28%."
+        prompt += "Currently, their FEDTI is greater than 28%. "
 
     
-    prompt += "Can you reccomend some advice, tips, and suggestions as to what they might be able to change in order to get the loan approved?"
+    prompt += "Can you reccomend some advice, tips, and suggestions as to what they might be able to change in order to get the loan approved? "
 
     print(prompt)
 
@@ -135,6 +135,5 @@ def ask_gpt():
     )
 
     total = response['choices'][0]['message']['content']
-    response_text = total.split("\n")[0]
 
-    return response_text
+    return total
