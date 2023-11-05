@@ -85,3 +85,14 @@ def return_averages():
     with open("averages.json", 'r') as file:
         data = json.load(file)
     return data
+
+@app.route("/percent_rejected_by_factor")
+def return_percent_by_factor():
+    return (
+        {"credit_score_check":4028/8400,
+            "lti_check": 6258/8400,
+            "dti_43_check": 6526/8400,
+            "dti_36_check": 1380/8400,
+            "fedti_check": 6286/8400
+        }
+    )
