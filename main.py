@@ -14,7 +14,7 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 
-@app.route("/run-one")
+@app.route("/run-one", methods=['POST'])
 def analyze():
 
     data = pd.DataFrame.from_dict(request.get_json(), orient='index')
