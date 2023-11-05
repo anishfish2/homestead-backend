@@ -101,7 +101,7 @@ def return_percent_by_factor():
         }
     )
 
-@app.route("/get-suggestion")
+@app.route("/get-suggestion", methods=['POST'])
 def ask_gpt():
     load_dotenv()
     openai.api_key = os.getenv('OPENAI_KEY')
@@ -178,7 +178,7 @@ def gross_approval():
              "y_Y" : y_listY
              })
 
-@app.route("/reverse-engineer")
+@app.route("/reverse-engineer", methods=['POST'])
 def reverse_engineer():
    
     data = pd.DataFrame.from_dict([request.get_json()['value']])
@@ -266,8 +266,17 @@ def reverse_engineer():
             return f"You are limited by your DTI, raise your gross monthly income above {check_dti} to approve your loan!"
         else:
             return f"You are limited by your FEDTI, raise your gross monthly income above {check_fedti} to approve your loan!"
+        
+    
+    if column_to_check == "appraised_value":
+        temp = pd.DataFrame.from_dict([request.get_json()['value']]) 
 
-
+        if data['DTI'] > .36:
+            required_monthly_mortgage_payment_processed_dti = .36 * data['gross_monthly_income'].iloc[0] - data['credit_card_payment'].iloc[0] + data['car_payment'].iloc[0] + data['student_loan_payments'].iloc[0]
+            required_monthly_mortgage_payment_processed_fedti = .28 * data['gross_monthly_income'].iloc[0]
+            
+            if required_monthly_mortgage_payment_processed_dti >= required_monthly_mortgage_payment_processed_dti:
+                max_ltv = 0
 
 
 
